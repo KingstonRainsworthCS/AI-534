@@ -7,7 +7,7 @@ sns.set()
 path_to_csv = "./pa0(train-only).csv"
 
 print(f'Reading data from {path_to_csv}')
-rawDF = pd.read_csv("pa0(train-only).csv")
+rawDF = pd.read_csv(path_to_csv)
 print("Viewing head: ")
 print(rawDF.head())
 # read and view head of csv file for quick check
