@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[73]:
+# In[128]:
 
 
 import numpy as np
@@ -12,9 +12,11 @@ sns.set()
 
 path_to_train_csv = "./IA2-train.csv"
 path_to_dev_csv = "./IA2-dev.csv"
+path_to_kaggle_data = "./IA2-test-small-v2-X.csv"
 
 originalData = pd.read_csv(path_to_train_csv)
 testData = pd.read_csv(path_to_dev_csv)
+kaggleData = pd.read_csv(path_to_kaggle_data)
 
 
 # In[74]:
@@ -49,7 +51,7 @@ validationData.head()
 
 # ## Part 1
 
-# In[ ]:
+# In[77]:
 
 
 MAX_ITER = 5000
@@ -60,7 +62,7 @@ MIN_ERR = 0.01
 #MIN_ERR = 0.005
 
 initialGuess = np.repeat(0.0, len(testData.columns) - 1)
-## W0 = [0,0,...,0]
+## W0 = [1,1, ..., 1]
 
 featureData = normalizeData.drop(['Response'], axis = 1)
 featureValidationData = validationData.drop(['Response'], axis = 1)
@@ -102,7 +104,7 @@ def roundingW(W):
 ## Helper functions
 
 
-# In[ ]:
+# In[78]:
 
 
 wLambda0001 = BGDLogic(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 0.001)
@@ -114,7 +116,7 @@ valAccWLambda0001 = getAccuracy(getPrediction(wLambda0001, featureValidationData
 print('\n Validating accuracy: %6.4f '%valAccWLambda0001)
 
 
-# In[ ]:
+# In[79]:
 
 
 wLambda001 = BGDLogic(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 0.01)
@@ -126,7 +128,7 @@ valAccWLambda001 = getAccuracy(getPrediction(wLambda001, featureValidationData),
 print('\n Validating accuracy: %6.4f'%valAccWLambda001)
 
 
-# In[ ]:
+# In[80]:
 
 
 wLambda01 = BGDLogic(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 0.1)
@@ -138,7 +140,7 @@ valAccWLambda01 = getAccuracy(getPrediction(wLambda01, featureValidationData), v
 print('\n Validating accuracy: %6.4f'%valAccWLambda01)
 
 
-# In[ ]:
+# In[81]:
 
 
 wLambda1 = BGDLogic(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 1)
@@ -150,7 +152,7 @@ valAccWLambda1 = getAccuracy(getPrediction(wLambda1, featureValidationData), val
 print('\n Validating accuracy: %6.4f'%valAccWLambda1)
 
 
-# In[ ]:
+# In[82]:
 
 
 wLambda10 = BGDLogic(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 10)
@@ -162,7 +164,7 @@ valAccWLambda10 = getAccuracy(getPrediction(wLambda10, featureValidationData), v
 print('\n Validating accuracy: %6.4f'%valAccWLambda10)
 
 
-# In[ ]:
+# In[83]:
 
 
 wLambda100 = BGDLogic(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 100)
@@ -174,7 +176,7 @@ valAccWLambda100 = getAccuracy(getPrediction(wLambda100, featureValidationData),
 print('\n Validating accuracy: %6.4f'%valAccWLambda100)
 
 
-# In[ ]:
+# In[84]:
 
 
 wLambda1000 = BGDLogic(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 1000)
@@ -186,7 +188,7 @@ valAccWLambda1000 = getAccuracy(getPrediction(wLambda1000, featureValidationData
 print('\n Validating accuracy: %6.4f'%valAccWLambda1000)
 
 
-# In[ ]:
+# In[85]:
 
 
 f, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 6), sharey=True)
@@ -203,23 +205,25 @@ sns.barplot(x=x2, y=y2, ax=ax2)
 ax2.set_ylabel("Accuracy with validating data")
 plt.show()
 plt.savefig("IA2P1A.png", format="png")
+
+
 # Most important weight:
 
-# In[ ]:
+# In[86]:
 
 
 FinalWStar = dict(zip(featureData.columns.values, wLambda01))
 dict(sorted(FinalWStar.items(), key=lambda item: np.absolute(item[1]), reverse = True))
 
 
-# In[ ]:
+# In[87]:
 
 
 FinalWDash = dict(zip(featureData.columns.values, wLambda0001))
 dict(sorted(FinalWDash.items(), key=lambda item: np.absolute(item[1]), reverse = True))
 
 
-# In[ ]:
+# In[88]:
 
 
 FinalWPlus = dict(zip(featureData.columns.values, wLambda1))
@@ -228,7 +232,7 @@ dict(sorted(FinalWPlus.items(), key=lambda item: np.absolute(item[1]), reverse =
 
 # Sparcity Report: (assuming near 0 weight is 0 at 1e-9)
 
-# In[ ]:
+# In[89]:
 
 
 plt.subplots(figsize=(12, 9))
@@ -251,7 +255,7 @@ plt.savefig("IA2P1C.png", format="png")
 
 # ## Part 2
 
-# In[ ]:
+# In[103]:
 
 
 def BGDLogicL1(inputData, resultData, initVector, maxIter, minErr, alphaRate, lambdaReg):
@@ -277,7 +281,7 @@ def BGDLogicL1(inputData, resultData, initVector, maxIter, minErr, alphaRate, la
 ## Batch gradient descent L1
 
 
-# In[ ]:
+# In[104]:
 
 
 wLambda0001L1 = BGDLogicL1(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 0.001)
@@ -289,7 +293,7 @@ valAccWLambda0001L1 = getAccuracy(getPrediction(wLambda0001L1, featureValidation
 print('\n Validating accuracy: %6.4f '%valAccWLambda0001L1)
 
 
-# In[ ]:
+# In[105]:
 
 
 wLambda001L1 = BGDLogicL1(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 0.01)
@@ -301,7 +305,7 @@ valAccWLambda001L1 = getAccuracy(getPrediction(wLambda001L1, featureValidationDa
 print('\n Validating accuracy: %6.4f '%valAccWLambda001L1)
 
 
-# In[ ]:
+# In[93]:
 
 
 wLambda01L1 = BGDLogicL1(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 0.1)
@@ -313,7 +317,7 @@ valAccWLambda01L1 = getAccuracy(getPrediction(wLambda01L1, featureValidationData
 print('\n Validating accuracy: %6.4f '%valAccWLambda01L1)
 
 
-# In[ ]:
+# In[94]:
 
 
 wLambda1L1 = BGDLogicL1(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 1)
@@ -325,7 +329,7 @@ valAccWLambda1L1 = getAccuracy(getPrediction(wLambda1L1, featureValidationData),
 print('\n Validating accuracy: %6.4f '%valAccWLambda1L1)
 
 
-# In[ ]:
+# In[95]:
 
 
 wLambda10L1 = BGDLogicL1(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 10)
@@ -337,7 +341,7 @@ valAccWLambda10L1 = getAccuracy(getPrediction(wLambda10L1, featureValidationData
 print('\n Validating accuracy: %6.4f '%valAccWLambda10L1)
 
 
-# In[ ]:
+# In[96]:
 
 
 wLambda100L1 = BGDLogicL1(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 100)
@@ -349,7 +353,7 @@ valAccWLambda100L1 = getAccuracy(getPrediction(wLambda100L1, featureValidationDa
 print('\n Validating accuracy: %6.4f '%valAccWLambda100L1)
 
 
-# In[ ]:
+# In[97]:
 
 
 wLambda1000L1 = BGDLogicL1(featureData, originalData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 1000)
@@ -361,7 +365,7 @@ valAccWLambda1000L1 = getAccuracy(getPrediction(wLambda1000L1, featureValidation
 print('\n Validating accuracy: %6.4f '%valAccWLambda1000L1)
 
 
-# In[ ]:
+# In[98]:
 
 
 f, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 6), sharey=True)
@@ -382,30 +386,30 @@ plt.savefig("IA2P2A.png", format="png")
 
 # Most important weight:
 
-# In[ ]:
+# In[106]:
 
 
-FinalWStarL1 = dict(zip(featureData.columns.values, wLambda01L1))
+FinalWStarL1 = dict(zip(featureData.columns.values, wLambda001L1))
 dict(sorted(FinalWStarL1.items(), key=lambda item: np.absolute(item[1]), reverse = True))
 
 
-# In[ ]:
+# In[109]:
 
 
-FinalWDashL1 = dict(zip(featureData.columns.values, wLambda001L1))
+FinalWDashL1 = dict(zip(featureData.columns.values, wLambda0001L1))
 dict(sorted(FinalWDashL1.items(), key=lambda item: np.absolute(item[1]), reverse = True))
 
 
-# In[ ]:
+# In[108]:
 
 
-FinalWPlus1 = dict(zip(featureData.columns.values, wLambda1L1))
+FinalWPlus1 = dict(zip(featureData.columns.values, wLambda01L1))
 dict(sorted(FinalWPlus1.items(), key=lambda item: np.absolute(item[1]), reverse = True))
 
 
 # Sparcity graph:
 
-# In[ ]:
+# In[102]:
 
 
 plt.subplots(figsize=(12, 9))
@@ -424,6 +428,87 @@ ax = sns.barplot(x = xaxis, y = sparcities)
 ax.set(xlabel='Lambda', ylabel='Number of weight == 0')
 plt.show()
 plt.savefig("IA2P2C.png", format="png")
+
+
+# ## Part 3 Kaggle competition
+
+# In[125]:
+
+
+kaggleTrainingData = pd.concat([originalData, testData])
+
+
+# In[141]:
+
+
+normalizeKaggleTrainingData = kaggleTrainingData.copy()[[
+    'Previously_Insured',
+    'Vehicle_Damage',
+    'Policy_Sales_Channel_152',
+    'Vehicle_Age_1',
+    'dummy',
+    'Vehicle_Age_0',
+    'Region_Code_28',
+    'Policy_Sales_Channel_26',
+    'Age',
+    'Policy_Sales_Channel_124',
+    'Response'
+]]
+
+normalizeKaggleTrainingData['Age'] = (normalizeKaggleTrainingData['Age'] - normalizeKaggleTrainingData['Age'].mean()) / normalizeKaggleTrainingData['Age'].std()
+normalizeKaggleTrainingData.head()
+
+
+# In[135]:
+
+
+kaggleTestData = kaggleData.copy()[[
+    'Previously_Insured',
+    'Vehicle_Damage',
+    'Policy_Sales_Channel_152',
+    'Vehicle_Age_1',
+    'dummy',
+    'Vehicle_Age_0',
+    'Region_Code_28',
+    'Policy_Sales_Channel_26',
+    'Age',
+    'Policy_Sales_Channel_124'
+]]
+
+kaggleTestData['Age'] = (kaggleTestData['Age'] - normalizeKaggleTrainingData['Age'].mean()) / normalizeKaggleTrainingData['Age'].std()
+kaggleTestData.head()
+
+
+# In[148]:
+
+
+featureNormalizeKaggleTrainingData = normalizeKaggleTrainingData.drop(['Response'], axis = 1)
+initialGuess = np.repeat(0.0, 10)
+wKaggle = BGDLogic(featureNormalizeKaggleTrainingData, normalizeKaggleTrainingData['Response'], initialGuess, MAX_ITER, MIN_ERR, 0.1, 0.1)
+
+
+# In[164]:
+
+
+resultDF = pd.DataFrame({ 'ID': range(0,25000), 'Response': getPrediction(wKaggle, kaggleTestData)})
+
+
+# In[165]:
+
+
+resultDF.head()
+
+
+# In[166]:
+
+
+resultDF.to_csv('IA2Kaggle.csv', index=False)
+
+
+# In[163]:
+
+
+
 
 
 # In[ ]:
